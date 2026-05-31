@@ -1,0 +1,8 @@
+.DS_Store
+*.swp
+*.swo
+*.tmp
+lazy-lock.json
+nvim/spell/*.spl
+nvim/spell/*.sug
+nvim/spell/*.add.spl
