@@ -27,8 +27,17 @@ return {
 
     vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
       border = "rounded",
+      focusable = false,
       max_width = math.floor(vim.o.columns * 0.7),
       max_height = 10,
+      close_events = {
+        "CursorMoved",
+        "CursorMovedI",
+        "InsertEnter",
+        "BufHidden",
+        "BufLeave",
+        "WinScrolled",
+      },
     })
 
     vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
@@ -240,10 +249,23 @@ return {
       hover_timer = vim.uv.new_timer()
       hover_timer:start(3000, 0, vim.schedule_wrap(function()
         if has_lsp() and vim.g.popup_hints_enabled and not diagnostic_under_cursor() then
+          if vim.api.nvim_win_get_config(0).relative ~= "" then
+            return
+          end
+
           vim.lsp.buf.hover({
             border = "rounded",
+            focusable = false,
             max_width = math.floor(vim.o.columns * 0.7),
             max_height = 10,
+            close_events = {
+              "CursorMoved",
+              "CursorMovedI",
+              "InsertEnter",
+              "BufHidden",
+              "BufLeave",
+              "WinScrolled",
+            },
           })
         end
       end))
@@ -342,8 +364,17 @@ return {
         map("K", function()
           vim.lsp.buf.hover({
             border = "rounded",
+            focusable = false,
             max_width = math.floor(vim.o.columns * 0.7),
             max_height = 10,
+            close_events = {
+              "CursorMoved",
+              "CursorMovedI",
+              "InsertEnter",
+              "BufHidden",
+              "BufLeave",
+              "WinScrolled",
+            },
           })
         end, "Hover documentation")
         map("<leader>gt", implementation_in_tab, "Go to implementation in new tab")
