@@ -57,12 +57,6 @@ return {
       desc = "AI explain selection",
     },
     {
-      "<leader>af",
-      ":CopilotChat Fix this code<CR>",
-      mode = "v",
-      desc = "AI fix selection",
-    },
-    {
       "<leader>at",
       ":CopilotChat Write tests for this code<CR>",
       mode = "v",

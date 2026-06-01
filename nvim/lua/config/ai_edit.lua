@@ -1,5 +1,10 @@
 local function run_copilot_chat(prompt)
-  vim.cmd("CopilotChat " .. vim.fn.escape(prompt, "\\|\""))
+  vim.api.nvim_cmd({
+    cmd = "CopilotChat",
+    args = {
+      prompt,
+    },
+  }, {})
 end
 
 local function edit_current_buffer()
@@ -13,8 +18,8 @@ local function edit_current_buffer()
     local prompt = table.concat({
       "@copilot",
       "#buffer:active",
-      "Apply this change directly to the current file using the edit tool.",
-      "Do not only explain. Modify the buffer/file.",
+      "Use the edit tool and apply the change directly to the current file.",
+      "Do not only explain.",
       "Task:",
       input,
     }, " ")
@@ -35,8 +40,8 @@ local function edit_selection()
       "@copilot",
       "#buffer:active",
       "#selection",
-      "Apply this change directly to the selected code using the edit tool.",
-      "Do not only explain. Modify the buffer/file.",
+      "Use the edit tool and apply the change directly to the selected code.",
+      "Do not only explain.",
       "Change only the selected code if possible.",
       "Task:",
       input,
@@ -46,10 +51,28 @@ local function edit_selection()
   end)
 end
 
+local function fix_selection()
+  local prompt = table.concat({
+    "@copilot",
+    "#buffer:active",
+    "#selection",
+    "Use the edit tool and fix the selected code directly in the buffer.",
+    "Do not only explain.",
+    "Preserve the original behavior unless there is an obvious bug.",
+    "Keep the style consistent with the surrounding code.",
+  }, " ")
+
+  run_copilot_chat(prompt)
+end
+
 vim.keymap.set("n", "<leader>ab", edit_current_buffer, {
   desc = "AI edit current buffer",
 })
 
 vim.keymap.set("v", "<leader>av", edit_selection, {
-  desc = "AI edit selection",
+  desc = "AI edit selection with prompt",
+})
+
+vim.keymap.set("v", "<leader>af", fix_selection, {
+  desc = "AI fix selection in buffer",
 })
