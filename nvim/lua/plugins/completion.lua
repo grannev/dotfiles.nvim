@@ -20,8 +20,41 @@ return {
           return true
         end,
       },
-      ["<Tab>"] = { "select_next", "fallback" },
-      ["<S-Tab>"] = { "select_prev", "fallback" },
+      ["<Tab>"] = {
+        function(cmp)
+          if cmp.is_visible() then
+            cmp.select_next()
+            return true
+          end
+
+          local col = vim.api.nvim_win_get_cursor(0)[2]
+          local line = vim.api.nvim_get_current_line()
+          local before = line:sub(col, col)
+
+          if before:match("%s") or col == 0 then
+            return false
+          end
+
+          if vim.g.popup_hints_enabled ~= true then
+            cmp.show()
+            return true
+          end
+
+          return false
+        end,
+        "fallback",
+      },
+      ["<S-Tab>"] = {
+        function(cmp)
+          if cmp.is_visible() then
+            cmp.select_prev()
+            return true
+          end
+
+          return false
+        end,
+        "fallback",
+      },
     },
 
     appearance = {
