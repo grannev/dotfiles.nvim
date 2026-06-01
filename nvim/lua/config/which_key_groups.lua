@@ -8,6 +8,7 @@ vim.api.nvim_create_autocmd("User", {
     end
 
     wk.add({
+      { "<leader>a", group = "ai" },
       { "<leader>f", group = "find" },
       { "<leader>g", group = "git" },
       { "<leader>i", group = "inlay hints" },
