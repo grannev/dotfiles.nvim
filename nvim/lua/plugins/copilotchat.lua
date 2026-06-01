@@ -71,6 +71,9 @@ return {
   },
   opts = {
     auto_insert_mode = true,
+    trusted_tools = {
+      "edit",
+    },
 
     window = {
       layout = "vertical",
