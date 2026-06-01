@@ -1,0 +1,54 @@
+local function delete_buffer(force)
+  require("mini.bufremove").delete(0, force)
+end
+
+local function write_current(force)
+  if force then
+    vim.cmd("write!")
+  else
+    vim.cmd("write")
+  end
+end
+
+local function update_current()
+  vim.cmd("update")
+end
+
+vim.api.nvim_create_user_command("SmartQuit", function(opts)
+  delete_buffer(opts.bang)
+end, { bang = true })
+
+vim.api.nvim_create_user_command("SmartWriteQuit", function(opts)
+  write_current(opts.bang)
+  delete_buffer(opts.bang)
+end, { bang = true })
+
+vim.api.nvim_create_user_command("SmartXit", function(opts)
+  if opts.bang then
+    write_current(true)
+  else
+    update_current()
+  end
+
+  delete_buffer(opts.bang)
+end, { bang = true })
+
+vim.cmd([[
+  cnoreabbrev <expr> q getcmdtype() ==# ':' && getcmdline() ==# 'q' ? 'SmartQuit' : 'q'
+  cnoreabbrev <expr> q! getcmdtype() ==# ':' && getcmdline() ==# 'q!' ? 'SmartQuit!' : 'q!'
+  cnoreabbrev <expr> quit getcmdtype() ==# ':' && getcmdline() ==# 'quit' ? 'SmartQuit' : 'quit'
+  cnoreabbrev <expr> quit! getcmdtype() ==# ':' && getcmdline() ==# 'quit!' ? 'SmartQuit!' : 'quit!'
+
+  cnoreabbrev <expr> wq getcmdtype() ==# ':' && getcmdline() ==# 'wq' ? 'SmartWriteQuit' : 'wq'
+  cnoreabbrev <expr> wq! getcmdtype() ==# ':' && getcmdline() ==# 'wq!' ? 'SmartWriteQuit!' : 'wq!'
+  cnoreabbrev <expr> x getcmdtype() ==# ':' && getcmdline() ==# 'x' ? 'SmartXit' : 'x'
+  cnoreabbrev <expr> x! getcmdtype() ==# ':' && getcmdline() ==# 'x!' ? 'SmartXit!' : 'x!'
+  cnoreabbrev <expr> exit getcmdtype() ==# ':' && getcmdline() ==# 'exit' ? 'SmartXit' : 'exit'
+  cnoreabbrev <expr> xit getcmdtype() ==# ':' && getcmdline() ==# 'xit' ? 'SmartXit' : 'xit'
+]])
+
+local map = vim.keymap.set
+
+map("n", "<leader>q", "<cmd>SmartQuit<CR>", { desc = "Close buffer" })
+map("n", "ZZ", "<cmd>SmartXit<CR>", { desc = "Save and close buffer" })
+map("n", "ZQ", "<cmd>SmartQuit!<CR>", { desc = "Force close buffer" })

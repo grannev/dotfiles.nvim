@@ -1,0 +1,246 @@
+call plug#begin('~/.vim/plugged')
+Plug 'tpope/vim-surround'        
+Plug 'tpope/vim-commentary'     
+Plug 'preservim/nerdtree'
+Plug 'ryanoasis/vim-devicons'
+Plug 'ap/vim-css-color'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'lambdalisue/fern.vim'
+Plug 'joshdick/onedark.vim'
+Plug 'ivalkeen/nerdtree-execute'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+" Plug 'ludovicchabant/vim-gutentags'
+" Plug 'vim-scripts/Conque-GDB'
+" Plug 'sheerun/vim-polyglot'   
+
+"  if has('nvim')
+"    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+"  else
+"    Plug 'Shougo/deoplete.nvim'
+"    Plug 'roxma/nvim-yarp'
+"    Plug 'roxma/vim-hug-neovim-rpc'
+"  endif
+
+" Plug 'davidhalter/jedi-vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'bagrat/vim-buffet'
+Plug 'crusoexia/vim-monokai'
+Plug 'sainnhe/sonokai' 
+Plug 'preservim/tagbar'  
+Plug 'itchyny/lightline.vim' 
+Plug 'morhetz/gruvbox'
+Plug 'vim-ruby/vim-ruby'
+Plug 'tpope/vim-rails'
+Plug 'ekalinin/dockerfile.vim'
+Plug 'christoomey/vim-system-copy'
+" Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+" Plug 'junegunn/fzf.vim'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+call plug#end()
+
+" Ограничение высоты всплывающего меню
+set pumheight=5
+
+" Комментарии в стиле /* */ для C
+autocmd FileType c setlocal commentstring=/*\ %s\ */
+autocmd FileType cpp setlocal commentstring=/*\ %s\ */
+
+" Coc.nvim — базовая настройка
+set updatetime=300
+set signcolumn=yes
+
+" Переход к определению
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Возврат обратно
+nnoremap <silent> <C-o>
+
+" Ctrl+Клик мышью для перехода
+nnoremap <silent> <C-LeftMouse> <Plug>(coc-definition)
+
+" Прокрутка в меню автодополнения
+inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" Set a custom path for vim-go binaries
+let g:go_bin_path = $HOME . "/.go/bin"
+let $PATH = g:go_bin_path . ":" . $PATH
+
+
+let g:lightline#extensions#tabline#enabled = 0
+" Настройка vim-buffet
+let g:buffet_powerline_separators = 1
+let g:buffet_show_index = 1
+let g:buffet_use_devicons = 1
+
+" Цвета Catppuccin Mocha
+let g:buffet_colorscheme = 'catppuccin_mocha'
+
+" Включить tabline от buffet вместо lightline
+let g:buffet_always_show_tabline = 1
+
+" Скрываем встроенный tabline
+set showtabline=0
+
+" let g:airline_powerline_fonts = 1
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#branch#enabled = 1
+" let g:airline#extensions#tabline#formatter = 'unique_tail_improved'
+
+" Базовые настройки
+syntax enable           " Включить подсветку синтаксиса
+filetype plugin indent on " Автоопределение типа файлов
+set colorcolumn=80
+
+" Интерфейс
+set number              " Номера строк
+set ruler               " Показывать позицию курсора
+set showcmd             " Показывать команды в статусной строке
+set showmode            " Показывать текущий режим
+set title               " Показывать имя файла в заголовке терминала
+set cursorline          " Подсветка текущей строки
+
+" Поиск
+set incsearch           " Инкрементальный поиск
+set hlsearch
+set ignorecase          " Игнорировать регистр при поиске
+set smartcase           " Учитывать регистр при наличии заглавных букв
+
+" Табуляция и отступы
+set tabstop=4           " Ширина табуляции в 4 пробела
+set shiftwidth=4        " Ширина отступа в 4 пробела
+set expandtab           " Преобразовать табы в пробелы
+set autoindent          " Автоотступы
+
+" Работа с текстом
+set wrap                " Перенос длинных строк
+set linebreak           " Перенос по словам
+set scrolloff=5         " Минимальное количество строк вокруг курсора
+
+" Кодировка
+"set encoding=utf-8      " Кодировка файлов
+"set fileencoding=utf-8
+filetype on         " Enable filetype detection
+filetype plugin on  " Enable filetype-specific plugins
+filetype indent on  " Enable filetype-specific indentation settings
+
+" История и буферы
+set hidden              " Разрешить переключение между буферами без сохранения
+set history=1000        " История команд
+set undolevels=1000     " История отмен
+
+" Системные настройки
+set mouse=a             " Включить мышь во всех режимах
+set backspace=indent,eol,start " Поведение backspace
+set modifiable
+
+" Горячие клавиши
+nnoremap <Space> :nohlsearch<CR>
+nnoremap <C-s> :w<CR>
+nnoremap <C-q> :q<CR>
+nnoremap <C-c> yy
+nnoremap <C-x> dd
+nnoremap <C-v> p
+nnoremap <A-Left> gT
+nnoremap <A-right> gt
+
+" Статусная строка
+set laststatus=2        " Всегда показывать статусную строку
+set statusline=%F\ %m\ %r\ %y\ [%l,%v][%p%%]
+
+" Цветовая схема (если есть поддержка 256 цветов)
+colorscheme catppuccin 
+set bg=dark
+
+augroup filetype_asm
+  autocmd!
+  autocmd BufRead,BufNewFile *.nasm setfiletype nasm
+augroup END
+
+" Блочный курсор в нормальном режиме (mode-normal)
+" Вертикальная линия в режиме вставки (mode-insert)
+" Подчеркивание в режиме замены (mode-replace)
+let &t_SI = "\e[6 q"  " Режим вставки (Insert) - вертикальная линия
+let &t_SR = "\e[4 q"  " Режим замены (Replace) - подчеркивание
+let &t_EI = "\e[2 q"  " Нормальный режим (Normal) - блок
+
+" Включить отображение невидимых символов
+"set list
+
+" Настроить отображение пробелов и других символов
+"set listchars=tab:→\ ,trail:·,extends:>,precedes:<,space:·
+"
+
+
+" trail:·  - показывает конечные пробелы как точки
+
+" Сделать символы более тусклыми (серыми)
+"highlight SpecialKey ctermfg=240 guifg=#4D4D4D
+"
+
+nnoremap <C-c> :source ~/.config/nvim/init.vim<CR>
+nnoremap <C-p> :NERDTreeFind<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
+nnoremap <Esc> :NERDTreeClose<CR>
+
+set complete+=w " Complete from other windows
+set completeopt+=menuone
+
+" Normal mode: Comment the current line
+"nnoremap <C-/> I/* <Esc>A */<Esc>
+"nnoremap <C-_> I/* <Esc>A */<Esc>
+
+" Visual mode: Wrap the selection in /* */
+"vnoremap <C-/> <Esc>`>a */<Esc>`<i/* <Esc>
+"vnoremap <C-_> <Esc>`>a */<Esc>`<i/* <Esc>
+inoremap <C-_> <C-o>gcc<End>
+let g:ConqueTerm_ReadUnfocused = 1
+let g:ConqueTerm_InsertCheckCursor = 0
+
+nnoremap <F5> :w<CR>:make<CR>
+nnoremap <F6> :make run<CR>
+
+let g:go_debug_mappings = {
+    \ '(go-debug-continue)': {'key': 'c'},
+    \ '(go-debug-next)':     {'key': 'n'},
+    \ '(go-debug-step)':     {'key': 's'},
+    \ '(go-debug-halt)':     {'key': 'h'},
+    \ '(go-debug-breakpoint)': {'key': 'b'},
+\ }
+
+" imap <Esc><BS> <C-w>
+" inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+"
+" Lightline конфиг с tabline
+let g:lightline = {
+      \ 'colorscheme': 'catppuccin_mocha',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'tabline': {
+      \   'left': [ [ 'tabs' ] ],
+      \   'right': [ ]
+      \ },
+      \ 'tab': {
+      \   'active': [ 'tabnum', 'filename', 'modified' ],
+      \   'inactive': [ 'tabnum', 'filename', 'modified' ]
+      \ }
+      \ }
+
+" Включаем tabline всегда
+set showtabline=2
+
+" Расширение для tabline
+let g:lightline#extensions#tabline#enabled = 1
+let g:lightline#extensions#tabline#show_tabs = 1
+let g:lightline#extensions#tabline#tab_nr_show = 1
+let g:lightline#extensions#tabline#buffer_nr_show = 0
+
+

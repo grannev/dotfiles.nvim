@@ -45,5 +45,3 @@ vim.keymap.set("n", "<leader>su", "zug", {
 vim.keymap.set("n", "<leader>sf", "z=", {
   desc = "Spell suggestions",
 })
-
-vim.opt.spellfile = vim.fn.stdpath("config") .. "/spell/ru.utf-8.add"

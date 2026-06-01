@@ -106,57 +106,6 @@ local function toggle_c_body_fold()
   end
 end
 
-
-local function brace_delta(line)
-  local opens = select(2, line:gsub("{", ""))
-  local closes = select(2, line:gsub("}", ""))
-
-  return opens - closes
-end
-
-local function create_all_body_folds()
-  vim.cmd("normal! zE")
-
-  local last_line = vim.fn.line("$")
-  local depth = 0
-  local folds_created = 0
-
-  for line_nr = 1, last_line do
-    local line = vim.fn.getline(line_nr)
-
-    if not line:match("^%s*#") then
-      local open_col = line:find("{", 1, true)
-
-      if depth == 0 and open_col then
-        local close_line = matching_close_brace(line_nr, open_col)
-
-        if close_line and close_line > line_nr + 1 then
-          local body_start = line_nr + 1
-          local body_end = close_line - 1
-
-          vim.cmd(body_start .. "," .. body_end .. "fold")
-          folds_created = folds_created + 1
-        end
-      end
-
-      depth = math.max(0, depth + brace_delta(line))
-    end
-  end
-
-  if folds_created == 0 then
-    vim.notify("No function body folds found", vim.log.levels.INFO)
-  end
-end
-
-local function close_all_c_body_folds()
-  create_all_body_folds()
-  vim.cmd("normal! zM")
-end
-
-local function open_all_c_body_folds()
-  vim.cmd("normal! zR")
-end
-
 vim.api.nvim_create_autocmd("FileType", {
   pattern = {
     "c",
@@ -176,16 +125,6 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "<leader>z", toggle_c_body_fold, {
       buffer = event.buf,
       desc = "Toggle C/C++ function body fold",
-    })
-
-    vim.keymap.set("n", "zM", close_all_c_body_folds, {
-      buffer = event.buf,
-      desc = "Close all C/C++ function body folds",
-    })
-
-    vim.keymap.set("n", "zR", open_all_c_body_folds, {
-      buffer = event.buf,
-      desc = "Open all C/C++ function body folds",
     })
   end,
 })

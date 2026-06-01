@@ -37,6 +37,30 @@ return {
       max_height = 8,
     })
 
+    vim.lsp.config("html", {
+      filetypes = {
+        "html",
+      },
+    })
+
+    vim.lsp.config("lua_ls", {
+      settings = {
+        Lua = {
+          diagnostics = {
+            globals = {
+              "vim",
+            },
+          },
+          workspace = {
+            checkThirdParty = false,
+          },
+          telemetry = {
+            enable = false,
+          },
+        },
+      },
+    })
+
     vim.lsp.config("pyright", {
       settings = {
         python = {
@@ -142,24 +166,6 @@ return {
     })
 
     vim.lsp.config("bashls", {})
-
-    vim.lsp.config("lua_ls", {
-      settings = {
-        Lua = {
-          diagnostics = {
-            globals = {
-              "vim",
-            },
-          },
-          workspace = {
-            checkThirdParty = false,
-          },
-          telemetry = {
-            enable = false,
-          },
-        },
-      },
-    })
 
     vim.lsp.config("clangd", {
       cmd = {

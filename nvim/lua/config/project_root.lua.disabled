@@ -1,0 +1,47 @@
+local root_markers = {
+  ".git",
+  "Makefile",
+  "CMakeLists.txt",
+  "pyproject.toml",
+  "package.json",
+  "go.mod",
+  "Cargo.toml",
+}
+
+local function find_root(path)
+  local root = vim.fs.root(path, root_markers)
+
+  if root then
+    return root
+  end
+
+  return vim.fn.getcwd()
+end
+
+local function set_project_root()
+  local bufname = vim.api.nvim_buf_get_name(0)
+
+  if bufname == "" then
+    return
+  end
+
+  local root = find_root(bufname)
+  local current = vim.fn.getcwd()
+
+  if root ~= current then
+    vim.cmd.cd(vim.fn.fnameescape(root))
+    vim.notify("Project root: " .. root, vim.log.levels.INFO)
+  end
+end
+
+vim.api.nvim_create_autocmd({
+  "VimEnter",
+  "BufEnter",
+}, {
+  callback = set_project_root,
+})
+
+vim.api.nvim_create_user_command("ProjectRoot", function()
+  set_project_root()
+  print(vim.fn.getcwd())
+end, {})

@@ -1,0 +1,12 @@
+{
+    "suggest.maxPreviewWidth": 60,
+    "suggest.maxItemCount": 5,
+    "suggest.minItemCount": 2,
+    "suggest.detailMaxLength": 40,
+    "languageserver": {
+        "gopls": {
+            "command": "/home/grannev/.go/bin/gopls",
+            "filetypes": ["go"]
+        }
+    }
+}
