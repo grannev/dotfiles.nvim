@@ -239,7 +239,7 @@ return {
 
       hover_timer = vim.uv.new_timer()
       hover_timer:start(3000, 0, vim.schedule_wrap(function()
-        if has_lsp() and not diagnostic_under_cursor() then
+        if has_lsp() and vim.g.popup_hints_enabled and not diagnostic_under_cursor() then
           vim.lsp.buf.hover({
             border = "rounded",
             max_width = math.floor(vim.o.columns * 0.7),

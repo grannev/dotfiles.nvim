@@ -16,6 +16,7 @@ vim.api.nvim_create_autocmd("User", {
       { "<leader>r", group = "run" },
       { "<leader>s", group = "session / search / spell" },
       { "<leader>t", group = "tabs" },
+      { "<leader>u", group = "ui toggles" },
       { "<leader>x", group = "diagnostics / trouble" },
       { "<leader>z", group = "folds" },
     })

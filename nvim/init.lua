@@ -1,4 +1,5 @@
 require("config.options")
+require("config.popup_hints")
 require("config.filetypes")
 require("config.keymaps")
 require("config.which_key_groups")

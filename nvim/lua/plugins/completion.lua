@@ -30,6 +30,9 @@ return {
 
     completion = {
       menu = {
+        auto_show = function()
+          return vim.g.popup_hints_enabled == true
+        end,
         border = "rounded",
         max_height = 10,
       },
