@@ -6,6 +6,7 @@ Short map of the config structure.
 
 ```text
 install.sh   installation script; backs up old config and symlinks nvim/
+mk_dotfiles.nvim.sh   syncs current ~/.config/nvim back into ~/.dotfiles/dotfiles.nvim
 README.md    install guide and keymap reference
 SOURCE.md    this file
 nvim/        actual Neovim configuration
@@ -107,3 +108,15 @@ comment.lua             block comments only; visual gc comments each selected li
 - Floating windows are preferred over permanent sidebars because this setup targets a small 12.5-inch screen.
 - Inlay hints are available but disabled by default.
 - Format-on-save is intentionally not enabled.
+
+## mk_dotfiles.nvim.sh
+
+Utility script for maintaining the GitHub repository after changing the live Neovim config. It copies the current system config from `~/.config/nvim` into `~/.dotfiles/dotfiles.nvim/nvim`, initializes Git if needed, stages changes, and can optionally commit and push.
+
+Common usage:
+
+```bash
+./mk_dotfiles.nvim.sh
+./mk_dotfiles.nvim.sh --commit
+./mk_dotfiles.nvim.sh --commit --push
+```

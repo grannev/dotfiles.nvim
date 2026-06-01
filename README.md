@@ -222,3 +222,35 @@ gh repo create dotfiles.nvim --public --source=. --remote=origin --push
 ```
 
 For a private repository, replace `--public` with `--private`.
+
+## Updating this repo from your current config
+
+When you change `~/.config/nvim` and want to copy the current system config back into this repository:
+
+```bash
+./mk_dotfiles.nvim.sh
+```
+
+With a commit:
+
+```bash
+./mk_dotfiles.nvim.sh --commit --message "Update Neovim config"
+```
+
+With push:
+
+```bash
+./mk_dotfiles.nvim.sh --commit --push
+```
+
+By default it syncs:
+
+```text
+~/.config/nvim -> ~/.dotfiles/dotfiles.nvim/nvim
+```
+
+You can override paths:
+
+```bash
+DOTFILES_NVIM_REPO=~/.dotfiles/dotfiles.nvim NVIM_CONFIG_DIR=~/.config/nvim ./mk_dotfiles.nvim.sh
+```
