@@ -46,3 +46,7 @@ map("n", "<leader>mo", "<cmd>copen<CR>", { desc = "Open quickfix" })
 map("n", "<leader>mc", "<cmd>cclose<CR>", { desc = "Close quickfix" })
 map("n", "<leader>mn", "<cmd>cnext<CR>", { desc = "Next quickfix item" })
 map("n", "<leader>mp", "<cmd>cprevious<CR>", { desc = "Previous quickfix item" })
+
+map("i", "<C-BS>", "<C-w>")
+map("i", "<C-h>", "<C-w>")
+map("i", "<C-Del>", "<C-o>dw")
