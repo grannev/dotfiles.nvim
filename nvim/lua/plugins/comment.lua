@@ -23,6 +23,14 @@ return {
         basic = true,
         extra = true,
       },
+
+      pre_hook = function()
+        local ft = vim.bo.filetype
+
+        if ft == "c" or ft == "cpp" then
+          return "/* %s */"
+        end
+      end,
     })
 
     vim.api.nvim_create_autocmd("FileType", {
