@@ -1,5 +1,75 @@
 local M = {}
 
+local system_tools = {
+  { cmd = "git", pkg = "git" },
+  { cmd = "rg", pkg = "ripgrep" },
+  { cmd = "fd", pkg = "fd" },
+  { cmd = "tree-sitter", pkg = "tree-sitter-cli" },
+  { cmd = "curl", pkg = "curl" },
+  { cmd = "tar", pkg = "tar" },
+  { cmd = "unzip", pkg = "unzip" },
+  { cmd = "gzip", pkg = "gzip" },
+  { cmd = "npm", pkg = "npm" },
+  { cmd = "python", pkg = "python" },
+  { cmd = "clangd", pkg = "clang" },
+  { cmd = "cc", pkg = "gcc" },
+  { cmd = "make", pkg = "make" },
+  { cmd = "sed", pkg = "sed" },
+  { cmd = "lazygit", pkg = "lazygit" },
+  { cmd = "latexmk", pkg = "texlive-binextra" },
+  { cmd = "evince", pkg = "evince" },
+}
+
+local optional_tools = {
+  { cmd = "go", pkg = "go" },
+  { cmd = "rustc", pkg = "rust" },
+  { cmd = "cargo", pkg = "rust" },
+  { cmd = "xelatex", pkg = "texlive-bin" },
+  { cmd = "lualatex", pkg = "texlive-bin" },
+}
+
+local mason_packages = {
+  "lua-language-server",
+  "pyright",
+  "bash-language-server",
+  "html-lsp",
+  "css-lsp",
+  "json-lsp",
+  "texlab",
+  "gopls",
+  "rust-analyzer",
+}
+
+local config_files = {
+  "options.lua",
+  "keymaps.lua",
+  "lazy.lua",
+  "filetypes.lua",
+  "popup_hints.lua",
+  "lsp_highlight.lua",
+  "inlay_hints.lua",
+  "runner.lua",
+  "sessions.lua",
+  "folds.lua",
+  "spell.lua",
+  "health.lua",
+}
+
+local plugin_files = {
+  "colorscheme.lua",
+  "telescope.lua",
+  "treesitter.lua",
+  "lsp.lua",
+  "mason.lua",
+  "completion.lua",
+  "signature.lua",
+  "gitsigns.lua",
+  "trouble.lua",
+  "toggleterm.lua",
+  "comment.lua",
+  "vimtex.lua",
+}
+
 local function ok_mark(value)
   return value and "OK " or "NO "
 end
@@ -43,7 +113,21 @@ local function config_file(path)
   return readable(vim.fn.stdpath("config") .. "/lua/config/" .. path)
 end
 
-local function show_report(lines)
+local function unique(items)
+  local seen = {}
+  local result = {}
+
+  for _, item in ipairs(items) do
+    if item and item ~= "" and not seen[item] then
+      seen[item] = true
+      table.insert(result, item)
+    end
+  end
+
+  return result
+end
+
+local function open_float(lines)
   local buf = vim.api.nvim_create_buf(false, true)
 
   vim.bo[buf].buftype = "nofile"
@@ -80,6 +164,91 @@ local function show_report(lines)
     buffer = buf,
     silent = true,
   })
+
+  vim.keymap.set("n", "r", function()
+    vim.cmd("close")
+    M.repair()
+  end, {
+    buffer = buf,
+    silent = true,
+    desc = "Repair missing dependencies",
+  })
+end
+
+local function open_terminal_command(command)
+  local ok, terminal = pcall(require, "toggleterm.terminal")
+
+  if ok then
+    local term = terminal.Terminal:new({
+      cmd = command,
+      direction = "float",
+      close_on_exit = false,
+      hidden = true,
+      float_opts = {
+        border = "rounded",
+        width = function()
+          return math.floor(vim.o.columns * 0.9)
+        end,
+        height = function()
+          return math.floor(vim.o.lines * 0.8)
+        end,
+      },
+    })
+
+    term:toggle()
+    return
+  end
+
+  vim.cmd("botright split")
+  vim.cmd("resize 12")
+  vim.cmd("terminal " .. command)
+end
+
+function M.repair()
+  local missing_packages = {}
+
+  for _, tool in ipairs(system_tools) do
+    if not executable(tool.cmd) then
+      table.insert(missing_packages, tool.pkg)
+    end
+  end
+
+  missing_packages = unique(missing_packages)
+
+  local missing_mason = {}
+
+  for _, package in ipairs(mason_packages) do
+    if not mason_package(package) then
+      table.insert(missing_mason, package)
+    end
+  end
+
+  vim.fn.mkdir(vim.fn.stdpath("state") .. "/undo", "p")
+  vim.fn.mkdir(vim.fn.stdpath("state") .. "/sessions", "p")
+  vim.fn.mkdir(vim.fn.stdpath("config") .. "/spell", "p")
+
+  local dotfiles_script = vim.fn.expand("~/.dotfiles/dotfiles.nvim/mk_dotfiles.nvim.sh")
+
+  if readable(dotfiles_script) and not executable(dotfiles_script) then
+    vim.fn.system({ "chmod", "+x", dotfiles_script })
+  end
+
+  if #missing_mason > 0 then
+    vim.cmd("MasonInstall " .. table.concat(missing_mason, " "))
+  end
+
+  if #missing_packages > 0 then
+    local cmd = "sudo pacman -S --needed " .. table.concat(missing_packages, " ")
+    open_terminal_command(cmd)
+    return
+  end
+
+  if #missing_mason > 0 then
+    vim.notify("Started Mason install: " .. table.concat(missing_mason, ", "), vim.log.levels.INFO)
+    return
+  end
+
+  vim.notify("Nothing to repair", vim.log.levels.INFO)
 end
 
 function M.run()
@@ -98,87 +267,28 @@ function M.run()
   add_check(lines, "lazy.nvim installed", directory(vim.fn.stdpath("data") .. "/lazy/lazy.nvim"))
 
   add_section(lines, "System tools")
-  local tools = {
-    "git",
-    "rg",
-    "fd",
-    "tree-sitter",
-    "curl",
-    "tar",
-    "unzip",
-    "gzip",
-    "npm",
-    "python",
-    "clangd",
-    "cc",
-    "make",
-    "sed",
-    "lazygit",
-    "latexmk",
-    "evince",
-  }
 
-  for _, tool in ipairs(tools) do
-    add_check(lines, tool, executable(tool))
+  for _, tool in ipairs(system_tools) do
+    add_check(lines, tool.cmd, executable(tool.cmd), "pacman: " .. tool.pkg)
   end
 
   add_section(lines, "Optional language tools")
-  add_check(lines, "go", executable("go"), "needed for Go projects")
-  add_check(lines, "rustc", executable("rustc"), "needed for Rust single files")
-  add_check(lines, "cargo", executable("cargo"), "needed for Rust projects")
-  add_check(lines, "xelatex", executable("xelatex"), "useful for LaTeX")
-  add_check(lines, "lualatex", executable("lualatex"), "useful for LaTeX")
+
+  for _, tool in ipairs(optional_tools) do
+    add_check(lines, tool.cmd, executable(tool.cmd), "optional pacman: " .. tool.pkg)
+  end
 
   add_section(lines, "Mason LSP packages")
-  local packages = {
-    "lua-language-server",
-    "pyright",
-    "bash-language-server",
-    "html-lsp",
-    "css-lsp",
-    "json-lsp",
-    "texlab",
-    "gopls",
-    "rust-analyzer",
-  }
 
-  for _, package in ipairs(packages) do
+  for _, package in ipairs(mason_packages) do
     add_check(lines, package, mason_package(package))
   end
 
   add_section(lines, "Important config files")
-  local config_files = {
-    "options.lua",
-    "keymaps.lua",
-    "lazy.lua",
-    "filetypes.lua",
-    "popup_hints.lua",
-    "lsp_highlight.lua",
-    "inlay_hints.lua",
-    "runner.lua",
-    "sessions.lua",
-    "folds.lua",
-    "spell.lua",
-  }
 
   for _, file in ipairs(config_files) do
     add_check(lines, "config/" .. file, config_file(file))
   end
-
-  local plugin_files = {
-    "colorscheme.lua",
-    "telescope.lua",
-    "treesitter.lua",
-    "lsp.lua",
-    "mason.lua",
-    "completion.lua",
-    "signature.lua",
-    "gitsigns.lua",
-    "trouble.lua",
-    "toggleterm.lua",
-    "comment.lua",
-    "vimtex.lua",
-  }
 
   for _, file in ipairs(plugin_files) do
     add_check(lines, "plugins/" .. file, plugin_file(file))
@@ -209,15 +319,21 @@ function M.run()
   end
 
   table.insert(lines, "")
+  table.insert(lines, "Press r to repair missing dependencies.")
   table.insert(lines, "Press q or Esc to close.")
 
-  show_report(lines)
+  open_float(lines)
 end
 
 vim.api.nvim_create_user_command("NvimConfigHealth", M.run, {})
+vim.api.nvim_create_user_command("NvimConfigRepair", M.repair, {})
 
 vim.keymap.set("n", "<leader>ch", M.run, {
   desc = "Neovim config health",
+})
+
+vim.keymap.set("n", "<leader>cr", M.repair, {
+  desc = "Neovim config repair",
 })
 
 return M
