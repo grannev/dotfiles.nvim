@@ -1,4 +1,5 @@
 require("config.options")
+require("config.transparency")
 require("config.popup_hints")
 require("config.filetypes")
 require("config.keymaps")
